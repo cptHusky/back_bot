@@ -15,8 +15,8 @@ from phrases import phrases
 RETRY_TIMEOUT = 15
 MAX_RETRIES = 10
 
-START_DATETIME = datetime.combine(datetime.now().date(), time(7, 0))
-END_DATETIME = datetime.combine(datetime.now().date(), time(22, 0))
+START_TIME = time(7, 0)
+END_TIME = time(22, 0)
 
 URL_WO_TEXT = f'https://api.telegram.org/bot{BOT_TOKEN}/sendMessage?chat_id={CHAT_ID}'
 
@@ -25,15 +25,23 @@ DB_ERROR_TEXT = "У меня пока нет для тебя мотивирую�
 
 
 def get_sleep_time() -> int:
-    now = datetime.now()
+    next_message_delay = randint(40 * 60, 90 * 60)
+    next_message_time = datetime.now() + timedelta(seconds=next_message_delay)
+    if next_message_time.time() < START_TIME:
+        if datetime.now().date() == next_message_time.date():
+            next_message_time = (datetime.combine(datetime.now().date(), START_TIME) +
+                                 timedelta(minutes=randint(2, 25)))
+        else:
+            next_message_time = (datetime.combine(datetime.now().date(), START_TIME) +
+                                 timedelta(days=1, minutes=randint(2, 25)))
 
-    if now < START_DATETIME:
-        return int((START_DATETIME - now).total_seconds()) + randint(10 * 60, 25 * 60)
-    elif now > END_DATETIME:
-        next_day_start = START_DATETIME + timedelta(days=1)
-        return int((next_day_start - now).total_seconds()) + randint(10 * 60, 25 * 60)
+    elif next_message_time.time() > END_TIME:
+        next_message_time = (datetime.combine(datetime.now().date(), START_TIME) +
+                             timedelta(days=1, minutes=randint(2, 25)))
+
     else:
-        return randint(40 * 60, 90 * 60)
+        return next_message_delay
+    return int((next_message_time - datetime.now()).total_seconds())
 
 
 def get_phrase_id() -> int:
@@ -85,7 +93,7 @@ def send_message(text: str) -> int:
 
 def main():
     logging.info("Bot started")
-    sleep_time = 0
+    sleep_time = get_sleep_time()
     while True:
         try:
             sleep(sleep_time)
