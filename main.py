@@ -94,6 +94,8 @@ def send_message(text: str) -> int:
 def main():
     logging.info("Bot started")
     sleep_time = get_sleep_time()
+    next_message_time = datetime.now() + timedelta(seconds=sleep_time)
+    logging.info(f"First message will be sent at {next_message_time}")
     while True:
         try:
             sleep(sleep_time)
