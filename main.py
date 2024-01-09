@@ -113,7 +113,7 @@ def main():
                 for attempt_number in range(MAX_RETRIES):
                     logging.info(f"Retry {attempt_number + 1} out of {MAX_RETRIES} in {RETRY_TIMEOUT} seconds...")
                     sleep(RETRY_TIMEOUT)
-                    send_message(text=text)
+                    code = send_message(text=text)
                     if code == 200:
                         logging.info(f"Message sent after retry: \"{text}\"")
                         break
