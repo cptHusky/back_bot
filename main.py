@@ -56,14 +56,10 @@ def get_phrase_id() -> int:
 
     # noinspection SQLUnresolvedReferences, SqlNoDataSourceInspection, SqlResolve
     cursor.execute("""
-    WITH min_times_used AS (
-      SELECT id, MIN(times_used) AS min_times
-      FROM phrase_usage
-      GROUP BY id
-    )
-    SELECT id
-    FROM min_times_used
-    ORDER BY RANDOM()
+    SELECT id 
+    FROM phrase_usage 
+    WHERE times_used = (SELECT MIN(times_used) FROM phrase_usage)
+    ORDER BY RANDOM() 
     LIMIT 1
     """)
 
@@ -74,7 +70,6 @@ def get_phrase_id() -> int:
 
     conn.commit()
     conn.close()
-
     return selected_id
 
 
