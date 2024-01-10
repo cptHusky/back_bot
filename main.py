@@ -138,15 +138,18 @@ def logger_init():
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
 
-    handler = TimedRotatingFileHandler(
+    file_handler = TimedRotatingFileHandler(
         filename=log_file,
         when="midnight",
         interval=1
     )
     formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-    handler.setFormatter(formatter)
+    file_handler.setFormatter(formatter)
+    logger.addHandler(file_handler)
 
-    logger.addHandler(handler)
+    console_handler = logging.StreamHandler()
+    console_handler.setFormatter(formatter)
+    logger.addHandler(console_handler)
 
 
 if __name__ == '__main__':
