@@ -149,4 +149,8 @@ def logger_init():
 
 if __name__ == '__main__':
     logger_init()
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        logging.info(f"Bot stopped")
+        logging.shutdown()
