@@ -86,7 +86,32 @@ def send_message(text: str) -> int:
     return code
 
 
+def db_working():
+    conn = connect(
+        dbname=DB_NAME,
+        user=DB_USER,
+        password=DB_PASS,
+        host=DB_HOST
+    )
+
+    cursor = conn.cursor()
+
+    # noinspection SQLUnresolvedReferences, SqlNoDataSourceInspection, SqlResolve
+    cursor.execute("SELECT * FROM phrase_usage")
+
+    selected_id = cursor.fetchone()[ID_COLUMN_ID]
+
+    # noinspection SqlNoDataSourceInspection, SqlResolve
+    if selected_id:
+        return True
+    return False
+
+
 def main():
+    if db_working():
+        logging.info("DB found")
+    else:
+        logging.warning("DB not found")
     logging.info("Bot started")
     sleep_time = get_sleep_time()
     next_message_time = datetime.now() + timedelta(seconds=sleep_time)
